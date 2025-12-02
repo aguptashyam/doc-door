@@ -3,17 +3,46 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h3 class="modal-title" id="aboutus-modal-title">VirtualClinic - An Integrated Care System</h3>
+                    <h3 class="modal-title" id="aboutus-modal-title"><i class="fas fa-clinic-medical"></i> doc@door - Virtual Healthcare Platform</h3>
                 </div>
                 <div id="aboutus-modal-body" class="modal-body">
-                    <p class="lead">
-                      Virtual Clinic is an integrated healthcare system simplifying the work for hospitals, doctor, patient, chemist, lab
-                    </p>
-                    <p>
-                        <ul>
-                            <li>Server IP: {{ server_ip1 }}</li>
-                            <li>Client IP: {{ client_ip }}</li>
-                        </ul>
+                    <div style="text-align: center; padding: 20px;">
+                        <h2 style="color: #0D7EA4; font-weight: 700; margin-bottom: 15px;">
+                            <i class="fas fa-clinic-medical" style="font-size: 48px; color: #00BCD4; margin-bottom: 10px;"></i><br>
+                            doc@door
+                        </h2>
+                        <p class="lead" style="color: #555; font-size: 16px; line-height: 1.8;">
+                            An integrated virtual healthcare platform connecting patients, doctors, hospitals, labs, and pharmacies.
+                        </p>
+                    </div>
+
+                    <div class="row" style="margin-top: 30px; margin-bottom: 20px;">
+                        <div class="col-md-6">
+                            <h5 style="color: #0D7EA4; font-weight: 600; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Key Features</h5>
+                            <ul style="list-style-position: inside; color: #666;">
+                                <li>Real-time Appointments</li>
+                                <li>Medical Records Management</li>
+                                <li>Digital Prescriptions</li>
+                                <li>Lab Test Coordination</li>
+                                <li>Secure Messaging</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 style="color: #0D7EA4; font-weight: 600; margin-bottom: 10px;"><i class="fas fa-users"></i> Designed For</h5>
+                            <ul style="list-style-position: inside; color: #666;">
+                                <li>Patients & Healthcare Seekers</li>
+                                <li>Doctors & Specialists</li>
+                                <li>Hospital Administrators</li>
+                                <li>Laboratory Personnel</li>
+                                <li>Pharmacists</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <p style="color: #666; font-size: 13px; text-align: center; margin-top: 15px;">
+                        <strong>Server:</strong> {{ server_ip1 }} | <strong>Client:</strong> {{ client_ip }}<br>
+                        © 2025 doc@door - Virtual Healthcare Platform. All rights reserved.
                     </p>
                 </div>
                 <div class="modal-footer">

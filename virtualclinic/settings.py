@@ -149,4 +149,8 @@ STATIC_URL = '/static/'
 
 #STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"),]
 
-STATICFILES_STORAGE='whitenoise.django.GzipManifestStaticFilesStorage'
+# Use WhiteNoise CompressedManifestStaticFilesStorage for production-like behavior
+if DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

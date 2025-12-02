@@ -3,14 +3,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Virtual Clinic {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.2/flatly/bootstrap.css"/>
+    <title>doc@door - Virtual Clinic {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/dashboard.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/modern.css"/>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js"></script>
@@ -20,8 +22,8 @@
     <script src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 </head>
-<body>
-    <nav class="navbar navbar-default navbar-static-top">
+<body class="doc-door-app">
+    <nav class="navbar navbar-custom navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -30,21 +32,23 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/{% block brand_link %}profile/{% endblock %}"><i class="fa fa-hospital-o"></i>  VirtualClinic</a>
+                <a class="navbar-brand" href="/{% block brand_link %}profile/{% endblock %}"><i class="fas fa-clinic-medical"></i> <span class="brand-text">doc@door</span></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
                     {% if user|isAuthenticated %}
-                        <li class="dropdown">
-                            <a href="/profile/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Account Management <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="/profile/">Signed in as {{ user.username }}</a></li>
+                        <li class="dropdown user-dropdown">
+                            <a href="/profile/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <i class="fas fa-user-circle"></i> Account <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-custom" role="menu">
+                                <li class="dropdown-header">{{ user.username }}</li>
                                 <li class="divider"></li>
-                                <li><a href="/profile/">View Profile<i class="pull-right fa fa-user"></i></a></li>
-                                <li><a href="/profile/update/">Update Profile<i class="pull-right fa fa-pencil"></i></a></li>
-                                <li><a href="/profile/password">Change Password<i class="pull-right fa fa-cog"></i></a></li>
+                                <li><a href="/profile/"><i class="fas fa-user"></i> View Profile</a></li>
+                                <li><a href="/profile/update/"><i class="fas fa-edit"></i> Update Profile</a></li>
+                                <li><a href="/profile/password"><i class="fas fa-lock"></i> Change Password</a></li>
                                 <li class="divider"></li>
-                                <li><a href="/logout">Logout<i class="pull-right fa fa-sign-out"></i></i></a></li>
+                                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                             </ul>
                         </li>
                     {% else %}
@@ -55,13 +59,13 @@
                     <li>
                         {% block nav_button %}{% endblock %}
                     </li>
-                    <li><a data-toggle="modal" data-target="#aboutus-modal">About us</a></li>
+                    <li><a data-toggle="modal" data-target="#aboutus-modal"><i class="fas fa-info-circle"></i> About</a></li>
                 </ul>
             </div>
         </div>
     </nav>
     {% if user|isAuthenticated %}
-        <nav class="navbar navbar-default sidebar" role="navigation">
+        <nav class="navbar navbar-custom-sidebar sidebar" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
@@ -72,29 +76,30 @@
                     </button>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
+                    <ul class="nav navbar-nav sidebar-nav">
                         {% if user.account.role >= 0 %}
-                            <li class="{% block sidebar_profile %}{% endblock %}"><a href="/profile/">Profile<i class="pull-right fa fa-user"></i></a></li>
-                            <li class="{% block sidebar_message %}{% endblock %}"><a href="/message/list/">Messages<i class="pull-right fa fa-envelope"></i></a></li>
+                            <li class="{% block sidebar_profile %}{% endblock %}"><a href="/profile/"><i class="fas fa-user"></i> <span>Profile</span></a></li>
+                            <li class="{% block sidebar_message %}{% endblock %}"><a href="/message/list/"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
                         {% endif %}
                         {% if user.account.role == 10 or user.account.role == 20 %}
-                            <li class="{% block sidebar_appointment %}{% endblock %}"><a href="/appointment/list/">Appointments<i class="pull-right fa fa-calendar"></i></a></li>
-                            <li class="{% block sidebar_medicalinfo %}{% endblock %}"><a href="{% if user.account.role == 10 %}/medicalinfo/patient/{% else %}/medicalinfo/list/{% endif %}">Medical Info<i class="pull-right fa fa-heartbeat"></i></a></li>
+                            <li class="{% block sidebar_appointment %}{% endblock %}"><a href="/appointment/list/"><i class="fas fa-calendar-alt"></i> <span>Appointments</span></a></li>
+                            <li class="{% block sidebar_medicalinfo %}{% endblock %}"><a href="{% if user.account.role == 10 %}/medicalinfo/patient/{% else %}/medicalinfo/list/{% endif %}"><i class="fas fa-heartbeat"></i> <span>Medical Info</span></a></li>
                         {% endif %}
                         {% if user.account.role == 40 or user.account.role == 10 or user.account.role == 20 %}
-                            <li class="{% block sidebar_medtest %}{% endblock %}"><a href="/medtest/list">Medical Tests<i class="pull-right fa fa-flask"></i></a></li>
+                            <li class="{% block sidebar_medtest %}{% endblock %}"><a href="/medtest/list"><i class="fas fa-flask"></i> <span>Medical Tests</span></a></li>
                         {% endif %}
                         {% if user.account.role == 10 or user.account.role == 20 or user.account.role == 50 %}
-                            <li class="{% block sidebar_prescription %}{% endblock %}"><a href="/prescription/list/">Prescriptions<i class="pull-right fa fa-file-text"></i></a></li>
+                            <li class="{% block sidebar_prescription %}{% endblock %}"><a href="/prescription/list/"><i class="fas fa-prescription-bottle"></i> <span>Prescriptions</span></a></li>
                         {% endif %}
                         {% if user.account.role == 30 %}
-                            <li class="{% block sidebar_admin_hospital %}{% endblock %}"><a href="/admin/add_hospital/">Add hospitals<i class="pull-right fa fa-hospital-o"></i></a></li>
-                            <li class="{% block sidebar_admin_symptom %}{% endblock %}"><a href="/admin/symptom/">Manage Symptom<i class="pull-right fa fa-hospital-o"></i></a></li>
-                            <li class="{% block sidebar_admin_speciality %}{% endblock %}"><a href="/admin/speciality/">Manage Speciality<i class="pull-right fa fa-stethoscope"></i></a></li>
-                            <li class="{% block sidebar_admin_users %}{% endblock %}"><a href="/admin/users/">Manage Users<i class="pull-right fa fa-users"></i></a></li>
-                            <li class="{% block sidebar_admin_activity %}{% endblock %}"><a href="/admin/activity/">View Activity<i class="pull-right fa fa-eye"></i></a></li>
-                            <li class="{% block sidebar_admin_statistics %}{% endblock %}"><a href="/admin/statistics/">View Statistics<i class="pull-right fa fa-bar-chart"></i></a></li>
-                            <li class="{% block sidebar_admin_import %}{% endblock %}"><a href="/admin/import/">CSV Management<i class="pull-right fa fa-upload"></i></a></li>
+                            <li class="sidebar-header"><span>Administration</span></li>
+                            <li class="{% block sidebar_admin_hospital %}{% endblock %}"><a href="/admin/add_hospital/"><i class="fas fa-hospital-user"></i> <span>Hospitals</span></a></li>
+                            <li class="{% block sidebar_admin_symptom %}{% endblock %}"><a href="/admin/symptom/"><i class="fas fa-capsules"></i> <span>Symptoms</span></a></li>
+                            <li class="{% block sidebar_admin_speciality %}{% endblock %}"><a href="/admin/speciality/"><i class="fas fa-stethoscope"></i> <span>Specialities</span></a></li>
+                            <li class="{% block sidebar_admin_users %}{% endblock %}"><a href="/admin/users/"><i class="fas fa-users"></i> <span>Users</span></a></li>
+                            <li class="{% block sidebar_admin_activity %}{% endblock %}"><a href="/admin/activity/"><i class="fas fa-eye"></i> <span>Activity</span></a></li>
+                            <li class="{% block sidebar_admin_statistics %}{% endblock %}"><a href="/admin/statistics/"><i class="fas fa-chart-bar"></i> <span>Statistics</span></a></li>
+                            <li class="{% block sidebar_admin_import %}{% endblock %}"><a href="/admin/import/"><i class="fas fa-upload"></i> <span>CSV Management</span></a></li>
                         {% endif %}
                     </ul>
                 </div>

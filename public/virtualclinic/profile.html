@@ -2,9 +2,9 @@
 {% load app_filters %}
 {% block title %}Overview{% endblock %}
 {% block sidebar_profile %}active{% endblock %}
-{% block body_header %}Welcome {{ user.account }}{% endblock %}
+{% block body_header %}<i class="fas fa-home"></i> Welcome {{ user.account }}{% endblock %}
 {% block body %}
-    <p class="lead">Navigate through the VirtualClinic system using the bar on the left-hand side of the browser.</p>
+    <p class="lead">Navigate through doc@door using the sidebar menu. Here's your healthcare dashboard.</p>
     {% if user.account.role <= 20 %}
         <div class="col-md-7">
             <div class="panel panel-primary">
