@@ -18,12 +18,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '1#^eo+u6b2k+kag#gu2-$g%#g!!x*dyvg(t#guzku-&^=q^^rq'
+SECRET_KEY = os.environ.get('SECRET_KEY', '1#^eo+u6b2k+kag#gu2-$g%#g!!x*dyvg(t#guzku-&^=q^^rq')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','virtual-clinic.herokuapp.com']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','virtual-clinic.herokuapp.com', '.onrender.com']
 
 
 # Application definition
@@ -75,19 +75,11 @@ WSGI_APPLICATION = 'virtualclinic.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600
+    )
 }
-
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default='sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
-#     )
-    
-# DATABASES = {
-#    'default': dj_database_url.config(
 #        default='sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
 #    )
 # }
