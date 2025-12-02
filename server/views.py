@@ -83,7 +83,11 @@ def parse_session(request, template_data=None):
     :param template_data: The dictionary to update
     :return: The updated dictionary
     """
-    server_ip1 = socket.gethostbyname(socket.getfqdn())
+    try:
+        server_ip1 = socket.gethostbyname(socket.getfqdn())
+    except (socket.gaierror, OSError):
+        # Fallback to localhost if hostname resolution fails
+        server_ip1 = '127.0.0.1'
     client_ip = get_client_ip(request)
     if template_data is None:
         template_data = {}
