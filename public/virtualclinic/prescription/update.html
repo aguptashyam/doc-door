@@ -1,10 +1,44 @@
-
 {% extends "base.html" %}
 {% load app_filters %}
+
 {% block title %}Update Prescription{% endblock %}
-{% block sidebar_medtest %}active{% endblock %}
-{% block body_header %}Update Prescription{% endblock %}
+{% block sidebar_prescription_link %}bg-gray-700{% endblock %}
+
+{% block body_header %}
+    <i class="fas fa-prescription-bottle"></i> Update Prescription
+{% endblock %}
+
+{% block body_subheader %}
+    Modify prescription details and medication information
+{% endblock %}
+
 {% block body %}
-    <p class="lead">Make changes to the prescription and click '{{ form_button }}' when finished.</p>
-    {% include "singleform.html" %}
+    <div class="max-w-2xl">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Update Prescription Details</h2>
+            </div>
+            <div class="card-body">
+                <p class="text-gray-600 mb-6">
+                    Make changes to the prescription and click '<strong>{{ form_button }}</strong>' when finished.
+                </p>
+                {% include "singleform.html" %}
+            </div>
+        </div>
+
+        <!-- Important Notice -->
+        <div class="card mt-6 bg-yellow-50 border-yellow-200">
+            <div class="card-body">
+                <div class="flex gap-3">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <h3 class="font-semibold text-yellow-900 mb-2">Important:</h3>
+                        <p class="text-sm text-yellow-800">
+                            Changes to prescriptions may affect the patient's medication plan. Make sure to verify all details before saving.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

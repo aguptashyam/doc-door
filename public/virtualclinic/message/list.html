@@ -1,27 +1,51 @@
 {% extends "base.html" %}
 {% load app_filters %}
-{% block title %}
-    View Messages
-{% endblock %}
-{% block sidebar_message %}
-    active
-{% endblock %}
-{% block body_header %}
-    View Messages
-    <br>
-    <a class="btn btn-success btn-sm" href="/message/new/" role="button">New message</a>
-{% endblock %}
+{% block title %}Messages{% endblock %}
+{% block sidebar_message %}active bg-gray-700{% endblock %}
+{% block body_header %}<i class="fas fa-envelope"></i> Messages{% endblock %}
+{% block body_subheader %}Send and receive messages with healthcare professionals{% endblock %}
 {% block body %}
-    <div role="tabpanel">
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#messages-received" id="messages-received" role="tab" data-toggle="tab"><i class="fa fa-arrow-circle-down"></i> Received messages</a></li>
-            <li role="presentation"><a href="#messages-sent" id="messages-sent" role="tab" data-toggle="tab"><i class="fa fa-arrow-circle-up"></i> Sent messages</a></li>
-            <li role="presentation"><a href="#messages-sent" id="messages-deleted" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> Archived messages</a></li>
-        </ul>
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active">
-                <br>
+    <div class="space-y-6">
+        <!-- New Message Button -->
+        <div class="flex flex-wrap gap-3">
+            <a href="/message/new/" class="btn btn-primary">
+                <i class="fas fa-pen-square mr-2"></i> Compose Message
+            </a>
+        </div>
+
+        <!-- Message Tabs -->
+        <div class="card" x-data="{ activeTab: 'received' }">
+            <div class="border-b border-gray-200 flex overflow-x-auto">
+                <button @click="activeTab = 'received'" :class="{ 'border-b-2 border-primary-600 text-primary-600': activeTab === 'received' }" class="px-6 py-4 font-medium text-gray-600 hover:text-gray-900 transition border-b-2 border-transparent whitespace-nowrap">
+                    <i class="fas fa-arrow-down mr-2"></i> Received
+                </button>
+                <button @click="activeTab = 'sent'" :class="{ 'border-b-2 border-primary-600 text-primary-600': activeTab === 'sent' }" class="px-6 py-4 font-medium text-gray-600 hover:text-gray-900 transition border-b-2 border-transparent whitespace-nowrap">
+                    <i class="fas fa-arrow-up mr-2"></i> Sent
+                </button>
+                <button @click="activeTab = 'archived'" :class="{ 'border-b-2 border-primary-600 text-primary-600': activeTab === 'archived' }" class="px-6 py-4 font-medium text-gray-600 hover:text-gray-900 transition border-b-2 border-transparent whitespace-nowrap">
+                    <i class="fas fa-archive mr-2"></i> Archived
+                </button>
+            </div>
+
+            <!-- Received Tab -->
+            <div x-show="activeTab === 'received'" class="p-6">
                 {% include "virtualclinic/message/detailed_table.html" %}
+            </div>
+
+            <!-- Sent Tab -->
+            <div x-show="activeTab === 'sent'" class="p-6">
+                <div class="text-center py-12">
+                    <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">Sent messages feature coming soon</p>
+                </div>
+            </div>
+
+            <!-- Archived Tab -->
+            <div x-show="activeTab === 'archived'" class="p-6">
+                <div class="text-center py-12">
+                    <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">Archived messages will appear here</p>
+                </div>
             </div>
         </div>
     </div>

@@ -84,6 +84,23 @@ def list_view(request):
     return render(request,'virtualclinic/prescription/list.html',template_data)
 
 
+def view_view(request):
+    # Authentication check
+    authentication_result = views.authentication_check(request, None, ['pk'])
+    if authentication_result is not None:
+        return authentication_result
+    # Validation check. Make sure a prescription exists for given pk.
+    pk = request.GET['pk']
+    try:
+        prescription = Prescription.objects.get(pk=pk)
+    except Exception:
+        request.session['alert_danger'] = "The requested prescription does not exist"
+        return HttpResponseRedirect('/error/denied')
+    # Get the template data from the session
+    template_data = views.parse_session(request, {'prescription': prescription})
+    return render(request, 'virtualclinic/prescription/view.html', template_data)
+
+
 def update_view(request):
     # Authentication check
     authentication_result = views.authentication_check(request, None, ['pk'])

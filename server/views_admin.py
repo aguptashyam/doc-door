@@ -51,7 +51,7 @@ def parse_symptom_delete(request):
                 symptom = Symptom.objects.get(pk=pk)
             except Exception:
                 template_data['alert_danger'] = "Unable to delete the symptom. Please try again later."
-                return
+                return HttpResponseRedirect('/admin/symptom/')
             symptom.delete()
             logger.log(Action.ACTION_ADMIN, 'Symptom cancelled', request.user.account)
             template_data['alert_success'] = "The symptom has been deleted."

@@ -1,73 +1,201 @@
 {% extends "base.html" %}
 {% load app_filters %}
 {% block title %}Overview{% endblock %}
-{% block sidebar_profile %}active{% endblock %}
-{% block body_header %}<i class="fas fa-home"></i> Welcome {{ user.account }}{% endblock %}
+{% block sidebar_profile %}active bg-gray-700{% endblock %}
+{% block body_header %}<i class="fas fa-home"></i> Welcome, {{ user.account }}!{% endblock %}
+{% block body_subheader %}Your healthcare dashboard and quick access to key features{% endblock %}
 {% block body %}
-    <p class="lead">Navigate through doc@door using the sidebar menu. Here's your healthcare dashboard.</p>
     {% if user.account.role <= 20 %}
-        <div class="col-md-7">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Schedule at a glance</div>
-                <div class="panel-body">
-                  {% include "virtualclinic/appointment/appointment_calendar.html" %}
+        <!-- Patient/Doctor Dashboard -->
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Schedule Calendar -->
+            <div class="lg:col-span-2">
+                <div class="card">
+                    <div class="card-header flex items-center justify-between">
+                        <h2 class="text-xl font-semibold">Schedule at a glance</h2>
+                        <a href="/appointment/calendar/" class="text-sm text-primary-600 hover:text-primary-700">
+                            View detailed <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% include "virtualclinic/appointment/appointment_calendar.html" %}
+                    </div>
                 </div>
-                <div class="panel-footer"><a href="/appointment/calendar/">For a more detailed schedule view, click here</a></div>
             </div>
-            <script>
-                $(document).ready(function() {
-                    $('#appointment-calendar').fullCalendar().fullCalendar('option', 'height', 500);
-                    $('#appointment-calendar').fullCalendar().fullCalendar('changeView', 'agendaWeek');
-                });
-            </script>
+
+            <!-- Sidebar Info Cards -->
+            <div class="space-y-4">
+                <!-- Quick Stats -->
+                <div class="card bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+                    <div class="card-body">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">Upcoming</h3>
+                            <i class="fas fa-calendar text-2xl text-blue-500 opacity-20"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-blue-600">{% include "virtualclinic/appointment/count_upcoming.html" %}</p>
+                        <p class="text-sm text-gray-600 mt-1">Appointments</p>
+                    </div>
+                </div>
+
+                <div class="card bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                    <div class="card-body">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">Messages</h3>
+                            <i class="fas fa-envelope text-2xl text-green-500 opacity-20"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-green-600">
+                            {% include "virtualclinic/message/count_unread.html" %}
+                        </p>
+                        <p class="text-sm text-gray-600 mt-1">Unread messages</p>
+                        <a href="/message/list/" class="inline-flex items-center gap-1 mt-3 text-sm text-green-600 hover:text-green-700">
+                            View messages <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="/message/list/" class="block">
+                    <div class="card hover:shadow-lg hover:border-primary-300">
+                        <div class="card-body text-center">
+                            <i class="fas fa-message text-3xl text-primary-500 mb-2"></i>
+                            <p class="font-medium text-gray-900">Message Center</p>
+                            <p class="text-xs text-gray-500">Connect with healthcare providers</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Recent Messages -->
+            <div class="lg:col-span-3">
+                <div class="card">
+                    <div class="card-header flex items-center justify-between">
+                        <h2 class="text-xl font-semibold">Recent messages</h2>
+                        <a href="/message/list/" class="text-sm text-primary-600 hover:text-primary-700">
+                            View all <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% include "virtualclinic/message/simple_table.html" %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-5">
+
     {% elif user.account.role == 30 %}
-        <div class="col-md-6">
-            <div class="panel panel-primary">
-                <div class="panel-heading">All System Statistics</div>
-                <div class="panel-body">
-                    <table class="table table-striped table-condensed">
-                        <thead>
-                            <th>Statistic</th>
-                            <th>Count</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Users logged in</td>
-                                <td>{{ total_logins }}</td>
-                            </tr>
-                            </tr>
-                                <td>Users logged out</td>
-                                <td>{{ total_logouts }}</td>
-                            </tr>
-                            </tr>
-                                <td>Appointments created</td>
-                                <td>{{ total_appointments }}</td>
-                            </tr>
-                            </tr>
-                                <td>Medical tests created</td>
-                                <td>{{ total_med_tests }}</td>
-                            </tr>
-                            </tr>
-                                <td>Users registered</td>
-                                <td>{{ total_registered }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <!-- Admin Dashboard -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Users Logged In</p>
+                            <p class="text-3xl font-bold text-blue-600 mt-1">{{ total_logins }}</p>
+                        </div>
+                        <i class="fas fa-sign-in-alt text-4xl text-blue-400 opacity-20"></i>
+                    </div>
                 </div>
-                <div class="panel-footer"><a href="/admin/statistics/">For a more detailed statistics view, click here</a></div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Users Logged Out</p>
+                            <p class="text-3xl font-bold text-green-600 mt-1">{{ total_logouts }}</p>
+                        </div>
+                        <i class="fas fa-sign-out-alt text-4xl text-green-400 opacity-20"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Appointments</p>
+                            <p class="text-3xl font-bold text-purple-600 mt-1">{{ total_appointments }}</p>
+                        </div>
+                        <i class="fas fa-calendar text-4xl text-purple-400 opacity-20"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Medical Tests</p>
+                            <p class="text-3xl font-bold text-orange-600 mt-1">{{ total_med_tests }}</p>
+                        </div>
+                        <i class="fas fa-flask text-4xl text-orange-400 opacity-20"></i>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-6">
-    {% else %}
-        <div class="col-md-6">
-    {% endif %}
-        <div class="panel panel-primary">
-            <div class="panel-heading">Recent messages</div>
-            <div class="panel-body">
-                {% include "virtualclinic/message/simple_table.html" %}
+
+        <!-- Statistics Cards -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="card">
+                <div class="card-header flex items-center justify-between">
+                    <h2 class="text-xl font-semibold">System Statistics</h2>
+                    <a href="/admin/statistics/" class="text-sm text-primary-600 hover:text-primary-700">
+                        View detailed <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                            <span class="text-gray-600">Users Registered</span>
+                            <span class="font-semibold text-gray-900">{{ total_registered }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        <div class="panel-footer"><a href="/message/list/">For a more detailed message view, click here</a></div>
-    </div>
+
+            <div class="card">
+                <div class="card-header flex items-center justify-between">
+                    <h2 class="text-xl font-semibold">Quick Actions</h2>
+                </div>
+                <div class="card-body space-y-3">
+                    <a href="/admin/users/" class="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-gray-700">
+                        <i class="fas fa-users mr-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/speciality/" class="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-gray-700">
+                        <i class="fas fa-stethoscope mr-2"></i> Specialities
+                    </a>
+                    <a href="/admin/activity/" class="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-gray-700">
+                        <i class="fas fa-eye mr-2"></i> Activity Log
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Lab/Pharmacy Dashboard -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="card">
+                <div class="card-header flex items-center justify-between">
+                    <h2 class="text-xl font-semibold">Dashboard Overview</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-gray-600">Welcome to your dashboard. Use the menu to access your features.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-xl font-semibold">Recent messages</h2>
+                </div>
+                <div class="card-body">
+                    {% include "virtualclinic/message/simple_table.html" %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <style>
+        @media (max-width: 768px) {
+            .lg\:col-span-2 { grid-column: span 1; }
+            .lg\:col-span-3 { grid-column: span 1; }
+        }
+    </style>
 {% endblock %}

@@ -70,19 +70,32 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = authenticate(
-                username = form.cleaned_data['email'].lower(),
-                password = form.cleaned_data['password']
-            )
-            userInfo = Account.objects.get(user=user)
-            if userInfo.archive == False:
-                login(request,user)
-                logger.log(Action.ACTION_ACCOUNT,"Account login",request.user.account)
-                request.session['alert_success'] = "Successfully logged into VirtualClinic."
-                return HttpResponseRedirect('/profile/')
+            username_or_email = form.cleaned_data['email'].lower()
+            password = form.cleaned_data['password']
+            
+            # Try to authenticate with username first
+            user = authenticate(username=username_or_email, password=password)
+            
+            # If not found, try with email
+            if user is None:
+                try:
+                    user_obj = User.objects.get(email=username_or_email)
+                    user = authenticate(username=user_obj.username, password=password)
+                except User.DoesNotExist:
+                    pass
+            
+            if user is not None:
+                userInfo = Account.objects.get(user=user)
+                if userInfo.archive == False:
+                    login(request,user)
+                    logger.log(Action.ACTION_ACCOUNT,"Account login",request.user.account)
+                    request.session['alert_success'] = "Successfully logged into VirtualClinic."
+                    return HttpResponseRedirect('/profile/')
+                else:
+                    request.session['alert_danger'] = "Account is archived! Please create a new account"
+                    return HttpResponseRedirect('/register/')
             else:
-                request.session['alert_danger'] = "Account is archived! Please create a new account"
-                return HttpResponseRedirect('/register/')
+                form.add_error('password', 'Incorrect username/email or password')
     else:
         form = LoginForm()
     template_data['form'] = form

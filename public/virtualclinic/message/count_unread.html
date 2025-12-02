@@ -1,0 +1,7 @@
+{% if messages %}
+    {% with unread_count=messages|dictsort:"is_read"|length %}
+        {{ unread_count }}
+    {% endwith %}
+{% else %}
+    0
+{% endif %}

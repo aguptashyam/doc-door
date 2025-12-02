@@ -1,61 +1,131 @@
 {% load app_filters %}
-<div id='appointment-calendar'></div>
+<div id='appointment-calendar' style="min-height: 400px;"></div>
 {% include "virtualclinic/appointment/appointment_modal.html" %}
+
+<!-- Fallback: Appointments List -->
+<div id='calendar-fallback' style="display: none;" class="mt-4">
+    <div class="space-y-2">
+        <p class="text-sm text-gray-600 mb-4">Unable to load calendar. Please try refreshing the page.</p>
+    </div>
+</div>
+
 <script type="text/javascript">
+    var virtualclinic = {};
     var healthnet = {};
-    function displayDeleteConfirmation(){
-        var startTime = moment(healthnet.lastevent.startTime).format("MMMM Do h:mm a");
-        document.getElementById('confirm-modal-body').innerHTML = 'Are you sure you want to cancel your appointment on '.concat(startTime, ' at ', virtualclinic.lastevent.hospital, '?');
-        document.getElementById('confirm-modal-hidden').value = healthnet.lastevent.id;
-        $('#confirm-modal').modal()
-        $('#options-modal').modal('hide')
-    }
-    function displayAppointmentManagement(){
-        var startTime = moment(virtualclinic.lastevent.startTime).format("MMMM Do h:mm a");
-        document.getElementById('options-modal-body').innerHTML =
-                'Showing options for your appointment on '.concat(
-                        virtualclinic.lastevent.formatted_start,
-                        ' until ',
-                        virtualclinic.lastevent.formatted_end,
-                        ' at ',
-                        virtualclinic.lastevent.hospital,
-                        '...');
-        document.getElementById('options-modal-link-update').href = '/appointment/update/?pk='.concat(healthnet.lastevent.id);
-        document.getElementById('options-modal-link-delete').onclick = displayDeleteConfirmation;
-        $('#options-modal').modal()
-    }
-    $(function () {
-        $('#appointment-calendar').fullCalendar({
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month,agendaWeek,agendaDay'
-            },
-            aspectRatio: 2.25,
-            editable: false,
-            eventClick: function(event, jsEvent, view) {
-                virtualclinic.lastevent = event;
-                displayAppointmentManagement(event.id, event.startTime, event.hospital);
-            },
-            eventMouseover: function(calEvent, jsEvent, view) {
-                $(this).css('background-color', '#1A242F');
-            },
-            eventMouseout: function(calEvent, jsEvent, view) {
-                $(this).css('background-color', '#2c3e50');
-            },
-            eventBackgroundColor: "#2c3e50",
-            eventBorderColor: "#1A242F",
-            eventColor: "#1A242F",
-            dayClick: function(date, jsEvent, view) {
-                if(view.name == 'month') {
-                    calendar = $('#appointment-calendar');
-                    calendar.fullCalendar('changeView', 'agendaDay');
-                    calendar.fullCalendar('gotoDate', date);
+    var calendarInitialized = false;
+    
+    function initializeCalendar() {
+        // Check if jQuery and fullCalendar are available
+        if (typeof jQuery === 'undefined') {
+            console.log('jQuery not loaded yet');
+            return false;
+        }
+        
+        if (typeof jQuery.fn.fullCalendar === 'undefined') {
+            console.log('FullCalendar plugin not loaded yet');
+            return false;
+        }
+        
+        var $ = jQuery;
+        
+        function displayDeleteConfirmation(){
+            if (!healthnet.lastevent) return;
+            var startTime = moment(healthnet.lastevent.start).format("MMMM Do h:mm a");
+            var confirmBody = document.getElementById('confirm-modal-body');
+            if (confirmBody) {
+                confirmBody.innerHTML = 'Are you sure you want to cancel your appointment on '.concat(startTime, ' at ', (healthnet.lastevent.hospital || 'Hospital'), '?');
+                document.getElementById('confirm-modal-hidden').value = healthnet.lastevent.id;
+                $('#confirm-modal').modal();
+                $('#options-modal').modal('hide');
+            }
+        }
+        
+        function displayAppointmentManagement(){
+            if (!healthnet.lastevent) return;
+            var startTime = moment(healthnet.lastevent.start).format("MMMM Do h:mm a");
+            var endTime = moment(healthnet.lastevent.end).format("MMMM Do h:mm a");
+            var optionsBody = document.getElementById('options-modal-body');
+            if (optionsBody) {
+                optionsBody.innerHTML = 'Showing options for your appointment on '.concat(
+                    startTime, ' until ', endTime, ' at ', (healthnet.lastevent.hospital || 'Hospital'), '...'
+                );
+                var updateLink = document.getElementById('options-modal-link-update');
+                if (updateLink) {
+                    updateLink.href = '/appointment/update/?pk='.concat(healthnet.lastevent.id);
                 }
-            },
-            events: [
-                {{ events }}
-            ]
-        })
+                var deleteLink = document.getElementById('options-modal-link-delete');
+                if (deleteLink) {
+                    deleteLink.onclick = displayDeleteConfirmation;
+                }
+                $('#options-modal').modal();
+            }
+        }
+        
+        try {
+            $('#appointment-calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                aspectRatio: 2.25,
+                editable: false,
+                eventClick: function(event, jsEvent, view) {
+                    healthnet.lastevent = event;
+                    displayAppointmentManagement();
+                },
+                eventMouseover: function(calEvent, jsEvent, view) {
+                    $(this).css('background-color', '#0284c7');
+                },
+                eventMouseout: function(calEvent, jsEvent, view) {
+                    $(this).css('background-color', '#0ea5e9');
+                },
+                eventBackgroundColor: "#0ea5e9",
+                eventBorderColor: "#0284c7",
+                eventColor: "#0ea5e9",
+                dayClick: function(date, jsEvent, view) {
+                    if(view.name == 'month') {
+                        var calendar = $('#appointment-calendar');
+                        calendar.fullCalendar('changeView', 'agendaDay');
+                        calendar.fullCalendar('gotoDate', date);
+                    }
+                },
+                events: [ {{ events|safe }} ]
+            });
+            calendarInitialized = true;
+        } catch(e) {
+            console.error('FullCalendar initialization error:', e);
+            document.getElementById('calendar-fallback').style.display = 'block';
+        }
+    }
+    
+    // Try to initialize immediately
+    document.addEventListener('DOMContentLoaded', function() {
+        var attempts = 0;
+        var maxAttempts = 20;
+        
+        function tryInit() {
+            if (initializeCalendar()) {
+                console.log('Calendar initialized successfully');
+                return;
+            }
+            
+            attempts++;
+            if (attempts < maxAttempts) {
+                setTimeout(tryInit, 250);
+            } else {
+                console.log('Failed to initialize calendar after', attempts, 'attempts');
+                document.getElementById('calendar-fallback').style.display = 'block';
+            }
+        }
+        
+        tryInit();
+    });
+    
+    // Also try on window load
+    window.addEventListener('load', function() {
+        if (!calendarInitialized) {
+            initializeCalendar();
+        }
     });
 </script>

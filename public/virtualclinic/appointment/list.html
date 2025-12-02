@@ -1,126 +1,180 @@
 {% extends "base.html" %}
 {% load app_filters %}
-{% block title %}
-    Views Appointments
-{% endblock %}
-{% block sidebar_appointment %}
-    active
-{% endblock %}
-{% block body_header %}
-    View Appointments
-    <br>
-    <a class="btn btn-success btn-sm" href="/appointment/create/" role="button">New Appointment</a>
-    <a class="btn btn-primary btn-sm" href="/appointment/calendar/" role="button">Calendar View</a>
-{% endblock %}
+{% block title %}View Appointments{% endblock %}
+{% block sidebar_appointment %}active bg-gray-700{% endblock %}
+{% block body_header %}Appointments{% endblock %}
+{% block body_subheader %}Manage your appointments and schedules{% endblock %}
 {% block body %}
-    <div role="tabpanel">
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#appointments-active" id="appointments-active" role="tab" data-toggle="tab">Active Appointments</a></li>
-            <li role="presentation" class="active"><a href="#appointments-cancelled" id="appointments-cancelled" role="tab" data-toggle="tab">Cancelled Appointments</a></li>
-        </ul>
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active">
-                <br>
-                <table id="datatable" class="table table-hover table-striped table-bordered">
-                    <thead>
-                        <th>
-                            {% if user.account.role != 20 %}
-                                Doctor
-                            {% endif %}
-                            {% if user.account.role != 10 %}
-                                Patient
-                            {% endif %}
-                        </th>
-                        <th>Description</th>
-                        <th>Hospital</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Status</th>
-                        <th data-defaultsort='disabled'>Options</th>
-                        <th>Type</th>
-                    </thead>
-                    <tbody>
-                        {% for appointment in query %}
-                            <tr>
-                                <td>
-                                    {% if user.account.role != 20 %}
-                                        {{ appointment.doctor.profile }}
-                                    {% endif %}
-                                    {% if user.account.role != 10 %}
-                                        {{ appointment.patient.profile }}
-                                    {% endif %}
-                                </td>
-                                <td>{{ appointment.description }}</td>
-                                <td>{{ appointment.hospital.name }}</td>
-                                <td>{{ appointment.startTime }}</td>
-                                <td>{{ appointment.endTime }}</td>
-                                <td>{{ appointment.status }}</td>
-                                <td>
-                                    {% if appointment.status == "Active" %}
-                                        <a class="btn btn-warning btn-sm" href="/appointment/update/?pk={{ appointment.pk }}" role="button">Update</a>
-                                        {% if not user.account.role == 0 %}
-                                            <script type="text/javascript">
-                                                function proxy{{ appointment.pk }}() {
-                                                    configureModal(
-                                                            {{ appointment.pk }},
-                                                            '{{ appointment.startTime }}',
-                                                            '{{ appointment.hospital.name|sanitizeJS }}'
-                                                        )
-                                                };
-                                            </script>
-                                            <button onclick="proxy{{ appointment.pk }}()" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirm-modal">Cancel</button>
+    <div class="space-y-6">
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-3">
+            <a href="/appointment/create/" class="btn btn-primary">
+                <i class="fas fa-plus mr-2"></i> New Appointment
+            </a>
+            <a href="/appointment/calendar/" class="btn btn-secondary">
+                <i class="fas fa-calendar-alt mr-2"></i> Calendar View
+            </a>
+        </div>
+
+        <!-- Tabs -->
+        <div class="card" x-data="{ activeTab: 'active' }">
+            <div class="border-b border-gray-200 flex">
+                <button @click="activeTab = 'active'" :class="{ 'border-b-2 border-primary-600 text-primary-600': activeTab === 'active' }" class="px-6 py-4 font-medium text-gray-600 hover:text-gray-900 transition border-b-2 border-transparent">
+                    <i class="fas fa-check-circle mr-2"></i> Active Appointments
+                </button>
+                <button @click="activeTab = 'cancelled'" :class="{ 'border-b-2 border-primary-600 text-primary-600': activeTab === 'cancelled' }" class="px-6 py-4 font-medium text-gray-600 hover:text-gray-900 transition border-b-2 border-transparent">
+                    <i class="fas fa-ban mr-2"></i> Cancelled Appointments
+                </button>
+            </div>
+
+            <!-- Active Tab -->
+            <div x-show="activeTab === 'active'" class="p-6">
+                {% if query %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm" id="datatable">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">
+                                        {% if user.account.role != 20 %}
+                                            Doctor
                                         {% endif %}
+                                        {% if user.account.role != 10 %}
+                                            Patient
+                                        {% endif %}
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Description</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Hospital</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Start Time</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">End Time</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Type</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in query %}
+                                    {% if appointment.status == "Active" %}
+                                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                                            <td class="px-4 py-3">
+                                                {% if user.account.role != 20 %}
+                                                    <div class="font-medium text-gray-900">{{ appointment.doctor.profile }}</div>
+                                                {% endif %}
+                                                {% if user.account.role != 10 %}
+                                                    <div class="font-medium text-gray-900">{{ appointment.patient.profile }}</div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-600">{{ appointment.description }}</td>
+                                            <td class="px-4 py-3">
+                                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                                                    {{ appointment.hospital.name }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-600">{{ appointment.startTime }}</td>
+                                            <td class="px-4 py-3 text-gray-600">{{ appointment.endTime }}</td>
+                                            <td class="px-4 py-3">
+                                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                                                    {{ appointment.status }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-600">{{ appointment.appointment_type }}</td>
+                                            <td class="px-4 py-3">
+                                                <div class="flex gap-2">
+                                                    <a href="/appointment/update/?pk={{ appointment.pk }}" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    {% if not user.account.role == 0 %}
+                                                        <button onclick="configureModal({{ appointment.pk }}, '{{ appointment.startTime }}', '{{ appointment.hospital.name|sanitizeJS }}')" type="button" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
                                     {% endif %}
-                                </td>
-                                <td>{{ appointment.appointment_type }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">No active appointments found</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Cancelled Tab -->
+            <div x-show="activeTab === 'cancelled'" class="p-6">
+                {% if query %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Patient/Doctor</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Description</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Hospital</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Start Time</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in query %}
+                                    {% if appointment.status == "Cancelled" %}
+                                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition opacity-60">
+                                            <td class="px-4 py-3">
+                                                {% if user.account.role != 20 %}
+                                                    {{ appointment.doctor.profile }}
+                                                {% endif %}
+                                                {% if user.account.role != 10 %}
+                                                    {{ appointment.patient.profile }}
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-600">{{ appointment.description }}</td>
+                                            <td class="px-4 py-3">{{ appointment.hospital.name }}</td>
+                                            <td class="px-4 py-3 text-gray-600">{{ appointment.startTime }}</td>
+                                            <td class="px-4 py-3">
+                                                <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-medium">
+                                                    Cancelled
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">No cancelled appointments</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
     {% include "virtualclinic/appointment/appointment_modal.html" %}
+
     <script type="text/javascript">
-        var virtualclinic = {};
-        virtualclinic.active = [];
-        virtualclinic.cancelled = [];
         function configureModal(pk, start, hospital) {
-            document.getElementById('confirm-modal-body').innerHTML = 'Are you sure you want to cancel your appointment on '.concat(start, ' at ', hospital, '?');
+            document.getElementById('confirm-modal-body').innerHTML = 'Are you sure you want to cancel your appointment on <strong>' + start + '</strong> at <strong>' + hospital + '</strong>?';
             document.getElementById('confirm-modal-hidden').value = pk;
+            document.getElementById('confirm-modal').classList.remove('hidden');
         }
-        function displayActive() {
-            var table = $('#datatable').DataTable();
-            table.rows().remove();
-            table.rows.add(virtualclinic.active).draw();
-        }
-        function displayCancelled() {
-            var table = $('#datatable').DataTable();
-            table.rows().remove();
-            table.rows.add(virtualclinic.cancelled).draw();
-        }
+
         $(document).ready(function() {
             $('#datatable').DataTable({
                 "columnDefs": [
-                    { "orderable": false, "targets": 6 },
-                    { "searchable": false, "targets": 6 }
-                ]
-            });
-            $('#datatable').DataTable().rows().every( function () {
-                if(this.data()[5] == "Active" || this.data()[5] == "Active") {
-                    virtualclinic.active.push(this.data());
-                } else if(this.data()[5] == "Cancelled") {
-                    virtualclinic.cancelled.push(this.data());
+                    { "orderable": false, "targets": 7 },
+                    { "searchable": false, "targets": 7 }
+                ],
+                "dom": '<"flex justify-between items-center mb-4"lf>rtip',
+                "language": {
+                    "search": "Filter:",
+                    "lengthMenu": "Show _MENU_ entries"
                 }
-                console.log("PARSE")
             });
-            $('#appointments-active').click(function (e) {
-                  displayActive();
-            });
-            $('#appointments-cancelled').click(function (e) {
-                  displayCancelled();
-            });
-            displayActive();
         });
     </script>
 {% endblock %}

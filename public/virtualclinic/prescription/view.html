@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load app_filters %}
+
+{% block title %}Prescription Details{% endblock %}
+{% block sidebar_prescription_link %}bg-gray-700{% endblock %}
+
+{% block body_header %}
+    <i class="fas fa-prescription-bottle"></i> Prescription Details
+{% endblock %}
+
+{% block body_subheader %}
+    Complete prescription information
+{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl">
+        <!-- Main Prescription Card -->
+        <div class="card mb-6">
+            <div class="card-header flex items-center justify-between">
+                <h2 class="text-2xl font-semibold">{{ prescription.medication }}</h2>
+                {% if prescription.active %}
+                    <span class="inline-flex items-center gap-1 px-4 py-2 bg-green-100 text-green-800 rounded-full font-semibold">
+                        <i class="fas fa-check-circle"></i>
+                        Active
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center gap-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold">
+                        <i class="fas fa-archive"></i>
+                        Completed
+                    </span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <!-- Medication Details -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Medication Information</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase font-semibold">Medication</p>
+                                    <p class="text-lg font-semibold text-gray-900">{{ prescription.medication }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase font-semibold">Strength / Dosage</p>
+                                    <p class="text-lg font-semibold text-gray-900">{{ prescription.strength }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase font-semibold">Instructions</p>
+                                    <p class="text-gray-700 leading-relaxed">{{ prescription.instruction }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Refill Information -->
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p class="text-xs text-blue-600 uppercase font-semibold mb-2">Remaining Refills</p>
+                            <p class="text-3xl font-bold text-blue-700">{{ prescription.refill }}</p>
+                            <p class="text-xs text-blue-600 mt-1">times available</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Doctor Information -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Prescribing Doctor</h3>
+                            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <p class="text-xs text-gray-500 uppercase font-semibold mb-2">Doctor</p>
+                                <p class="text-lg font-semibold text-gray-900">{{ prescription.doctor.profile }}</p>
+                                {% if prescription.doctor.user.email %}
+                                    <p class="text-sm text-gray-600 mt-2">
+                                        <i class="fas fa-envelope mr-2"></i>
+                                        {{ prescription.doctor.user.email }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Patient Information -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Patient</h3>
+                            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <p class="text-xs text-gray-500 uppercase font-semibold mb-2">Patient Name</p>
+                                <p class="text-lg font-semibold text-gray-900">{{ prescription.patient.profile }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Date Information -->
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-semibold mb-2">Issued Date</p>
+                            <p class="text-lg font-semibold text-gray-900">
+                                {{ prescription.date|date:"F d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3 justify-between">
+            <div>
+                <a href="/prescription/list/" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to List</span>
+                </a>
+            </div>
+            <div class="space-x-3">
+                {% if prescription.active and user.account.role == 20 %}
+                    <a href="/prescription/update/?pk={{ prescription.pk }}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                        <i class="fas fa-edit"></i>
+                        <span>Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Additional Information Panel -->
+        <div class="card mt-6 bg-amber-50 border-amber-200">
+            <div class="card-body">
+                <div class="flex gap-3">
+                    <i class="fas fa-lightbulb text-amber-600 flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <h3 class="font-semibold text-amber-900 mb-2">Important Information:</h3>
+                        <ul class="text-sm text-amber-800 space-y-1 list-disc list-inside">
+                            <li>Follow the instructions exactly as prescribed by your doctor</li>
+                            <li>Do not exceed the recommended dosage</li>
+                            <li>Store medication in a cool, dry place</li>
+                            <li>Refill limits apply - plan ahead for your medications</li>
+                            <li>Contact your doctor if you experience any side effects</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

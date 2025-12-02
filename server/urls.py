@@ -18,6 +18,7 @@ app_name = 'server'
 
 urlpatterns = [
     re_path(r'^$', views_home.login_view, name='index'),
+    re_path(r'^login/$', views_home.login_view, name='login'),
     re_path(r'^logout/$', views_home.logout_view, name='logout'),
     re_path(r'^register/$', views_home.register_view, name='register'),
     re_path(r'^setup/$', views_home.setup_view, name='setup'),
@@ -62,6 +63,7 @@ urlpatterns = [
 
     re_path(r'^prescription/create/$', views_prescription.create_view, name='prescription/create'),
     re_path(r'^prescription/list/$', views_prescription.list_view, name='prescription/list'),
+    re_path(r'^prescription/view/$', views_prescription.view_view, name='prescription/view'),
     re_path(r'^prescription/update/$', views_prescription.update_view, name='prescription/update'),
 
     re_path(r'^medicalinfo/list/$', views_medicalinfo.list_view, name='medicalinfo/list'),

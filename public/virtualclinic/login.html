@@ -2,17 +2,77 @@
 {% load app_filters %}
 {% block title %}Login{% endblock %}
 {% block brand_link %}{% endblock %}
-{% block nav_button %}<a href="/register/">Register</a>{% endblock %}
-{% block body_header %}<i class="fas fa-sign-in-alt"></i> Welcome to doc@door{% endblock %}
+{% block nav_button %}
+    <a href="/register/" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Register
+    </a>
+{% endblock %}
+{% block body_header %}<i class="fas fa-sign-in-alt"></i> Welcome back!{% endblock %}
+{% block body_subheader %}Sign in to your account to access the virtual clinic platform{% endblock %}
 {% block body %}
-    <div class="row">
-        <p class="lead">Please login or click register to create an account below.</p>
-    </div>
-    {% include "singleform.html" %}
-    <div class="row">
-        <div class="col-sm-12">
-            <br>
-            <a class="btn btn-success col-sm-12" href="/register/" role="button"><i class="fas fa-user-plus"></i> Register</a>
+    <div class="grid lg:grid-cols-2 gap-8 items-start">
+        <!-- Login Form -->
+        <div>
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-gray-600 mb-6">Please login to your account below.</p>
+                    {% include "singleform.html" %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Features / Information -->
+        <div class="space-y-4">
+            <div class="card hover:shadow-lg">
+                <div class="card-body">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-lock text-blue-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Secure Access</h3>
+                            <p class="text-gray-600 text-sm mt-1">Your data is encrypted and protected with industry-leading security standards.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card hover:shadow-lg">
+                <div class="card-body">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-clock text-green-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">24/7 Available</h3>
+                            <p class="text-gray-600 text-sm mt-1">Access medical services anytime, anywhere through our platform.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card hover:shadow-lg">
+                <div class="card-body">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user-md text-purple-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Expert Care</h3>
+                            <p class="text-gray-600 text-sm mt-1">Connect with qualified healthcare professionals and specialists.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+                <div class="card-body">
+                    <p class="text-sm text-gray-700 mb-3">Don't have an account yet?</p>
+                    <a href="/register/" class="btn btn-primary w-full justify-center">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

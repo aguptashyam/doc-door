@@ -61,22 +61,39 @@ class BasicForm(forms.Form):
 
 
 class LoginForm(BasicForm):
-    email = forms.EmailField(max_length=50,validators=[validate_username_exists])
-    setup_field(email,'Enter Email here')
+    email = forms.CharField(max_length=50, label="Email or Username")
+    setup_field(email,'Enter Email or Username here')
     password = forms.CharField(max_length=50,widget=forms.PasswordInput())
     setup_field(password,'Enter password here')
 
     def clean(self):
         """
-        This is to make sure the password is valid for the given email.
+        This is to make sure the password is valid for the given email or username.
+        Supports both email and username login.
         """
         cleaned_data = super(LoginForm,self).clean()
-        username = cleaned_data.get('email')
+        username_or_email = cleaned_data.get('email')
         password = cleaned_data.get('password')
-        if username and password:
-            user = authenticate(username=username, password=password)
+        
+        if username_or_email and password:
+            # Try to authenticate with the input as both username and email
+            user = authenticate(username=username_or_email.lower(), password=password)
             if user is None:
-                self.mark_error('password', 'Incorrect password')
+                # If not found as username, try as email
+                try:
+                    user_obj = User.objects.get(email=username_or_email.lower())
+                    user = authenticate(username=user_obj.username, password=password)
+                except User.DoesNotExist:
+                    pass
+            
+            if user is None:
+                self.mark_error('password', 'Incorrect username/email or password')
+        elif username_or_email:
+            # Check if user exists
+            if not User.objects.filter(username__iexact=username_or_email).exists() and \
+               not User.objects.filter(email__iexact=username_or_email).exists():
+                self.mark_error('email', 'This email or username does not exist')
+        
         return cleaned_data
 
 

@@ -1,15 +1,47 @@
 {% extends "base.html" %}
 {% load app_filters %}
-{% block title %}
-    Upload Test Result
-{% endblock %}
-{% block sidebar_medtest %}
-    active
-{% endblock %}
+
+{% block title %}Create Prescription{% endblock %}
+{% block sidebar_prescription_link %}bg-gray-700{% endblock %}
+
 {% block body_header %}
-    Upload Test Result
+    <i class="fas fa-prescription-bottle-plus"></i> Create Prescription
 {% endblock %}
+
+{% block body_subheader %}
+    Issue a new prescription to a patient with medication details
+{% endblock %}
+
 {% block body %}
-    <p class="lead">Fill out this medical test form and click '{{ form_button }}' when finished.</p>
-    {% include "singleform.html" %}
+    <div class="max-w-2xl">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Prescription Details</h2>
+            </div>
+            <div class="card-body">
+                <p class="text-gray-600 mb-6">
+                    Fill out all required fields and click '<strong>Create Prescription</strong>' when finished.
+                </p>
+                {% include "singleform.html" %}
+            </div>
+        </div>
+
+        <!-- Helpful Information -->
+        <div class="card mt-6 bg-blue-50 border-blue-200">
+            <div class="card-body">
+                <div class="flex gap-3">
+                    <i class="fas fa-lightbulb text-blue-600 flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <h3 class="font-semibold text-blue-900 mb-2">Prescription Tips:</h3>
+                        <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                            <li>Medication name should be clear and specific</li>
+                            <li>Strength should include the dosage amount and unit (e.g., "500mg", "10ml")</li>
+                            <li>Instructions should be detailed (e.g., "Twice daily after meals")</li>
+                            <li>Refills indicate how many times the patient can get a refill without a new prescription</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
